@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shine-app-deployment
+  namespace: shine-prod
+  labels:
+    app: shine-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shine-app
+  template:
+    metadata:
+      labels:
+        app: shine-app
+    spec:
+      containers:
+      - name: shine-app-container
+        image: docker.io/mshaan/shine-app:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3130 # Adjust this if your specific app container runs on a different port (e.g., 8080)
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shine-app-service
+  namespace: shine-prod
+spec:
+  type: LoadBalancer
+  selector:
+    app: shine-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
